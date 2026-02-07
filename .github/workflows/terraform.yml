@@ -1,0 +1,142 @@
+name: Terraform OKE Multi-Env
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - "infra-code/terraform/oci/oke-cluster-stack/**"
+  pull_request:
+    paths:
+      - "infra-code/terraform/oci/oke-cluster-stack/**"
+
+env:
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+
+defaults:
+  run:
+    working-directory: infra-code/terraform/oci/oke-cluster-stack
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform fmt -check -recursive
+      - run: cd envs/prod && terraform init -backend=false -input=false -reconfigure && terraform validate
+
+  plan-prod:
+    runs-on: ubuntu-latest
+    needs: validate
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # OCI Object Storage (S3-compat) não suporta "AWS chunked encoding" em algumas operações.
+      # Esses flags evitam multipart/chunked uploads ao gravar state no backend.
+      AWS_S3_DISABLE_MULTIPART_UPLOAD: "true"
+      AWS_S3_FORCE_PATH_STYLE: "true"
+      TF_VAR_compartment_id: ${{ secrets.COMPARTMENT_ID }}
+      TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
+      TF_VAR_node_image_id: ${{ secrets.NODE_IMAGE_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - name: Configure OCI credentials
+        shell: bash
+        env:
+          OCI_TENANCY_OCID: ${{ secrets.OCI_TENANCY_OCID }}
+          OCI_USER_OCID: ${{ secrets.OCI_USER_OCID }}
+          OCI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
+          OCI_REGION: ${{ secrets.OCI_REGION }}
+          OCI_PRIVATE_KEY_B64: ${{ secrets.OCI_PRIVATE_KEY_B64 }}
+          OCI_PRIVATE_KEY_PASSPHRASE: ${{ secrets.OCI_PRIVATE_KEY_PASSPHRASE }}
+        run: |
+          mkdir -p ~/.oci
+          echo "$OCI_PRIVATE_KEY_B64" | base64 -d > ~/.oci/oci_api_key.pem
+          chmod 600 ~/.oci/oci_api_key.pem
+
+          cat > ~/.oci/config <<EOF
+          [DEFAULT]
+          tenancy=$OCI_TENANCY_OCID
+          user=$OCI_USER_OCID
+          fingerprint=$OCI_FINGERPRINT
+          key_file=~/.oci/oci_api_key.pem
+          region=$OCI_REGION
+          EOF
+
+          if [ -n "${OCI_PRIVATE_KEY_PASSPHRASE:-}" ]; then
+            echo "pass_phrase=$OCI_PRIVATE_KEY_PASSPHRASE" >> ~/.oci/config
+          fi
+      - name: Write SSH public key
+        shell: bash
+        run: |
+          mkdir -p "$HOME/.ssh"
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > "$HOME/.ssh/id_rsa.pub"
+          chmod 600 "$HOME/.ssh/id_rsa.pub"
+          echo "TF_VAR_ssh_public_key_path=$HOME/.ssh/id_rsa.pub" >> "$GITHUB_ENV"
+      - run: cd envs/prod && terraform init
+      - run: cd envs/prod && terraform plan -out=tfplan
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prod-tfplan
+          path: infra-code/terraform/oci/oke-cluster-stack/envs/prod/tfplan
+
+  apply-prod:
+    runs-on: ubuntu-latest
+    needs: plan-prod
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: prod
+    concurrency:
+      group: terraform-prod
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_S3_DISABLE_MULTIPART_UPLOAD: "true"
+      AWS_S3_FORCE_PATH_STYLE: "true"
+      TF_VAR_compartment_id: ${{ secrets.COMPARTMENT_ID }}
+      TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
+      TF_VAR_node_image_id: ${{ secrets.NODE_IMAGE_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - name: Configure OCI credentials
+        shell: bash
+        env:
+          OCI_TENANCY_OCID: ${{ secrets.OCI_TENANCY_OCID }}
+          OCI_USER_OCID: ${{ secrets.OCI_USER_OCID }}
+          OCI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
+          OCI_REGION: ${{ secrets.OCI_REGION }}
+          OCI_PRIVATE_KEY_B64: ${{ secrets.OCI_PRIVATE_KEY_B64 }}
+          OCI_PRIVATE_KEY_PASSPHRASE: ${{ secrets.OCI_PRIVATE_KEY_PASSPHRASE }}
+        run: |
+          mkdir -p ~/.oci
+          echo "$OCI_PRIVATE_KEY_B64" | base64 -d > ~/.oci/oci_api_key.pem
+          chmod 600 ~/.oci/oci_api_key.pem
+
+          cat > ~/.oci/config <<EOF
+          [DEFAULT]
+          tenancy=$OCI_TENANCY_OCID
+          user=$OCI_USER_OCID
+          fingerprint=$OCI_FINGERPRINT
+          key_file=~/.oci/oci_api_key.pem
+          region=$OCI_REGION
+          EOF
+
+          if [ -n "${OCI_PRIVATE_KEY_PASSPHRASE:-}" ]; then
+            echo "pass_phrase=$OCI_PRIVATE_KEY_PASSPHRASE" >> ~/.oci/config
+          fi
+      - name: Write SSH public key
+        shell: bash
+        run: |
+          mkdir -p "$HOME/.ssh"
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > "$HOME/.ssh/id_rsa.pub"
+          chmod 600 "$HOME/.ssh/id_rsa.pub"
+          echo "TF_VAR_ssh_public_key_path=$HOME/.ssh/id_rsa.pub" >> "$GITHUB_ENV"
+      - uses: actions/download-artifact@v4
+        with:
+          name: prod-tfplan
+          path: infra-code/terraform/oci/oke-cluster-stack/envs/prod
+      - run: cd envs/prod && terraform init && terraform apply -auto-approve tfplan
