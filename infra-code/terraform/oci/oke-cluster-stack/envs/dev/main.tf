@@ -19,6 +19,8 @@ module "nodepools" {
   cluster_id          = module.oke.cluster_id
   nodes_subnet_id     = module.oke.worker_subnet_id
   pods_subnet_id      = module.oke.pod_subnet_id
+  worker_nsg_ids      = [module.oke.worker_nsg_id]
+  pod_nsg_ids         = [module.oke.pod_nsg_id]
   tenancy_ocid        = var.tenancy_ocid
   availability_domain = var.availability_domain
 

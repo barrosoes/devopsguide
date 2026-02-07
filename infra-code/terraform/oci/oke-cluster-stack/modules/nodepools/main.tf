@@ -53,7 +53,8 @@ resource "oci_containerengine_node_pool" "system_pool" {
   }
 
   node_config_details {
-    size = var.system_size
+    size    = var.system_size
+    nsg_ids = var.worker_nsg_ids
     placement_configs {
       availability_domain = local.nodepool_ad
       subnet_id           = var.nodes_subnet_id
@@ -100,7 +101,8 @@ resource "oci_containerengine_node_pool" "workload_pool" {
   }
 
   node_config_details {
-    size = var.workload_size
+    size    = var.workload_size
+    nsg_ids = var.worker_nsg_ids
     placement_configs {
       availability_domain = local.nodepool_ad
       subnet_id           = var.nodes_subnet_id

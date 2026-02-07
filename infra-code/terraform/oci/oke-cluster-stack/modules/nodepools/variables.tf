@@ -26,6 +26,12 @@ variable "pods_subnet_id" {
   description = "Subnet OCID de pods (obrigatório quando cni_type='npn')."
 }
 
+variable "worker_nsg_ids" {
+  type        = list(string)
+  default     = []
+  description = "NSGs para anexar aos VNICs dos worker nodes (node pools)."
+}
+
 variable "pod_nsg_ids" {
   type        = list(string)
   default     = []
