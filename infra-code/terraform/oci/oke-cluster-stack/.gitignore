@@ -1,0 +1,7 @@
+terraform.tfvars
+kubeconfig.yaml
+*.pem
+*.key
+.terraform/
+.tfdata-*/
+terraform.tfstate*

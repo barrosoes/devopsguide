@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keycloak
+  namespace: argocd     
+spec:
+  project: tools
+  source:
+    repoURL: harbor.guiadodevops.com
+    targetRevision: 24.7.7
+    chart: infra/keycloak
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: security
+  syncPolicy:
+    automated:
+      prune: true
+      allowEmpty: true 
+      selfHeal: true

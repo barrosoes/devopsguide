@@ -1,0 +1,14 @@
+compartment_id      = "ocid1.compartment.oc1..xxxx"
+ssh_public_key_path  = "~/.ssh/id_rsa.pub"
+vcn_cidr            = "10.10.0.0/16"
+home_region         = "sa-saopaulo-1"
+
+# Recomendado: OCID da tenancy (para listar Availability Domains).
+tenancy_ocid        = "ocid1.tenancy.oc1..aaaaaaaazjhsdvngrxxref2sykfxkpqonubj3i5yii6o3wv2tjy7inoqfjba"
+
+# Opcional: AD explícito para os node pools.
+# Ex.: "<tenancyShortName>:SA-SAOPAULO-1-AD-1"
+availability_domain = null
+
+# Se o auto-select falhar, informe um OCID de imagem OKE-ready nesta região
+# node_image_id = "ocid1.image.oc1.sa-saopaulo-1.aaaa..."

@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: airflow
+  namespace: argocd
+spec:
+  project: tools
+  source:
+    repoURL: harbor.guiadodevops.com
+    targetRevision: 1.18.0
+    helm:
+      values: |-
+        ingress:
+          apiServer:
+            enabled: true
+            annotations:
+              cert-manager.io/cluster-issuer: "letsencrypt"
+              external-dns.alpha.kubernetes.io/hostname: guiadodevops.com
+              external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"  
+            path: "/"
+            ingressClassName: "nginx"
+            hosts:
+              - name: "airflow.guiadodevops.com"
+                tls:
+                  enabled: true
+                  secretName: "airflow-tls"
+        config:
+          core:
+            load_examples: 'True'
+        dags:
+          gitSync:
+            enabled: true
+            repo: "https://github.com/ndawpa/airflow.git"
+            branch: "main"
+            rev: "HEAD"
+            depth: 1
+            subPath: ""
+            wait: 0
+            maxFailures: 0
+            credentialsSecret: ""
+        executor: "KubernetesExecutor"
+    chart: infra/airflow
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: airflow
+  syncPolicy:
+    automated:
+      prune: true
+      allowEmpty: true 
+      selfHeal: true

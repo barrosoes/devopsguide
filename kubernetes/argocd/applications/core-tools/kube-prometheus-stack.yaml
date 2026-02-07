@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd     
+spec:
+  project: core-tools
+  source:
+    repoURL: harbor.guiadodevops.com
+    targetRevision: 75.9.0
+    helm:
+      values: |-
+        # crds:
+        #   enabled: false
+        #   upgradeJob:
+        #     enabled: false
+        #     forceConflicts: false
+        prometheus:
+          prometheusSpec:
+            retention: 24h
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  storageClassName: "default"
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 50Gi
+            thanos:
+              objectStorageConfig:
+                existingSecret:
+                  name: "thanos-object-storage-minio"
+                  key: "objstore.yml"
+            resources:
+              requests:
+                memory: 1Gi
+                cpu: 250m
+              limits:
+                memory: 2Gi
+                cpu: 500m
+          thanosService:
+            enabled: true
+            port: 10901
+            targetPort: 10901
+          thanosServiceMonitor:
+            enabled: true
+        grafana:
+          additionalDataSources:
+            - name: thanos
+              type: prometheus
+              url: http://thanos-query.monitoring.svc.cluster.local:9090
+              access: proxy
+              isDefault: false
+              editable: true
+    chart: infra/kube-prometheus-stack
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      allowEmpty: true 
+      selfHeal: true

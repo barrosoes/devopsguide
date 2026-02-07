@@ -1,0 +1,71 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-dns
+  namespace: argocd     
+spec:
+  project: core-tools
+  source:
+    repoURL: harbor.guiadodevops.com
+    targetRevision: 1.17.0
+    helm:
+      values: |-
+        # Cloudflare configuration for external-dns
+        provider:
+          name: cloudflare
+
+        # Cloudflare-specific arguments
+        extraArgs:
+          - --cloudflare-proxied
+          - --cloudflare-dns-records-per-page=100
+
+        # Environment variables for Cloudflare credentials
+        env:
+          - name: CF_API_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: external-dns-provider-cloudflare
+                key: CF_API_KEY
+          - name: CF_API_EMAIL
+            valueFrom:
+              secretKeyRef:
+                name: external-dns-provider-cloudflare
+                key: CF_API_EMAIL
+
+        # Domain filters (optional - limit which domains to manage)
+        domainFilters:
+          - "dublinconsulting.com.br"
+
+        # Sources to monitor
+        sources:
+          - service
+          - ingress
+
+        # Registry type for tracking ownership
+        registry: txt
+
+        # TXT owner ID to identify records created by this instance
+        txtOwnerId: "external-dns"
+
+        # Policy for DNS record management
+        policy: upsert-only
+
+        # Update interval
+        interval: 2m
+
+        # Log level
+        logLevel: info
+
+        deploymentAnnotations:
+          reloader.stakater.com/match: "true"
+        podAnnotations:
+          reloader.stakater.com/auto: "true"
+    chart: infra/external-dns
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: operational
+  syncPolicy:
+    automated:
+      prune: true
+      allowEmpty: true 
+      selfHeal: true

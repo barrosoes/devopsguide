@@ -1,0 +1,78 @@
+stages:
+  - validate
+  - plan
+  - apply_dev
+  - apply_prod
+
+variables:
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+
+before_script:
+  - mkdir -p ~/.oci
+  - echo "$OCI_PRIVATE_KEY_B64" | base64 -d > ~/.oci/oci_api_key.pem
+  - chmod 600 ~/.oci/oci_api_key.pem
+  - |
+    cat > ~/.oci/config <<EOF
+    [DEFAULT]
+    tenancy=$OCI_TENANCY_OCID
+    user=$OCI_USER_OCID
+    fingerprint=$OCI_FINGERPRINT
+    key_file=~/.oci/oci_api_key.pem
+    region=$OCI_REGION
+    EOF
+  - |
+    if [ -n "${OCI_PRIVATE_KEY_PASSPHRASE}" ]; then
+      echo "pass_phrase=$OCI_PRIVATE_KEY_PASSPHRASE" >> ~/.oci/config
+    fi
+
+validate:
+  stage: validate
+  script:
+    - terraform fmt -check -recursive
+    - terraform -chdir=envs/dev init -backend=false -input=false -reconfigure
+    - terraform -chdir=envs/dev validate
+    - terraform -chdir=envs/prod init -backend=false -input=false -reconfigure
+    - terraform -chdir=envs/prod validate
+
+plan_dev:
+  stage: plan
+  script:
+    - cd envs/dev
+    - terraform init
+    - terraform plan -out=tfplan
+  artifacts:
+    paths:
+      - envs/dev/tfplan
+
+apply_dev:
+  stage: apply_dev
+  resource_group: terraform-dev
+  when: manual
+  script:
+    - cd envs/dev
+    - terraform init
+    - terraform apply -auto-approve tfplan
+  dependencies:
+    - plan_dev
+
+plan_prod:
+  stage: plan
+  script:
+    - cd envs/prod
+    - terraform init
+    - terraform plan -out=tfplan
+  artifacts:
+    paths:
+      - envs/prod/tfplan
+
+apply_prod:
+  stage: apply_prod
+  resource_group: terraform-prod
+  when: manual
+  script:
+    - cd envs/prod
+    - terraform init
+    - terraform apply -auto-approve tfplan
+  dependencies:
+    - plan_prod

@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: harbor
+  namespace: argocd     
+spec:
+  project: tools
+  source:
+    repoURL: harbor.guiadodevops.com
+    targetRevision: 1.17.1
+    helm:
+      values: |-
+        expose:
+          tls:
+            certSource: secret
+            secret:
+              secretName: harbor-tls
+          ingress:
+            hosts:
+              core: harbor.guiadodevops.com
+            className: nginx
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt
+              external-dns.alpha.kubernetes.io/hostname: guiadodevops.com
+              external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+        externalURL: https://harbor.guiadodevops.com
+    chart: infra/harbor
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: operational
+  syncPolicy:
+    automated:
+      prune: true
+      allowEmpty: true 
+      selfHeal: true
