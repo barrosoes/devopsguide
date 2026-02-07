@@ -18,6 +18,23 @@ locals {
     0,
     15
   )
+
+  # O módulo `oracle-terraform-modules/oke/oci` espera tags em uma estrutura
+  # "por componente". Mantemos todos os campos para evitar access errors quando
+  # o módulo ler chaves ausentes.
+  _default_component_tags = {
+    bastion           = {}
+    cluster           = {}
+    iam               = {}
+    network           = {}
+    operator          = {}
+    persistent_volume = {}
+    service_lb        = {}
+    workers           = {}
+  }
+
+  freeform_tags = merge(local._default_component_tags, var.freeform_tags)
+  defined_tags  = merge(local._default_component_tags, var.defined_tags)
 }
 
 module "oke_cluster" {
@@ -83,4 +100,7 @@ module "oke_cluster" {
   preferred_load_balancer = "public"
 
   ssh_public_key_path = var.ssh_public_key_path
+
+  freeform_tags = local.freeform_tags
+  defined_tags  = local.defined_tags
 }

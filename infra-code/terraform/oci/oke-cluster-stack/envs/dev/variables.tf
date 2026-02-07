@@ -23,3 +23,14 @@ variable "availability_domain" {
   description = "Availability Domain para os node pools. Se nulo, usa o primeiro AD retornado."
   default     = null
 }
+
+# Tag de teste para validar mudanças via pipeline (aplicada no componente "cluster").
+variable "oke_freeform_tags" {
+  type        = any
+  description = "Freeform tags do módulo OKE (estrutura por componente)."
+  default = {
+    cluster = {
+      test = "pipeline"
+    }
+  }
+}

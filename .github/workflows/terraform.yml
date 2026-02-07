@@ -2,10 +2,6 @@ name: Terraform OKE Multi-Env
 
 on:
   workflow_dispatch:
-  push:
-    branches: ["main"]
-    paths:
-      - "infra-code/terraform/oci/oke-cluster-stack/**"
   pull_request:
     paths:
       - "infra-code/terraform/oci/oke-cluster-stack/**"
@@ -25,6 +21,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
       - run: terraform fmt -check -recursive
+      - run: cd envs/dev && terraform init -backend=false -input=false -reconfigure && terraform validate
       - run: cd envs/prod && terraform init -backend=false -input=false -reconfigure && terraform validate
 
   plan-prod:
