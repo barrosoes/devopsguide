@@ -28,3 +28,14 @@ variable "node_image_id" {
   description = "OCID da imagem OKE-ready para os node pools. Se nulo, tenta escolher automaticamente."
   default     = null
 }
+
+# Tag de teste para validar mudanças via pipeline (aplicada no componente "cluster").
+variable "oke_freeform_tags" {
+  type        = any
+  description = "Freeform tags do módulo OKE (estrutura por componente)."
+  default = {
+    cluster = {
+      test = "pipeline"
+    }
+  }
+}

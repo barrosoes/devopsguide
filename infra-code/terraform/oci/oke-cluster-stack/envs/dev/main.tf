@@ -11,6 +11,8 @@ module "oke" {
   vcn_cidr = var.vcn_cidr
 
   ssh_public_key_path = var.ssh_public_key_path
+
+  freeform_tags = var.oke_freeform_tags
 }
 
 module "nodepools" {
