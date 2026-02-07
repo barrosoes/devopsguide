@@ -37,6 +37,9 @@ jobs:
       # Esses flags evitam multipart/chunked uploads ao gravar state no backend.
       AWS_S3_DISABLE_MULTIPART_UPLOAD: "true"
       AWS_S3_FORCE_PATH_STYLE: "true"
+      # OCI S3-compat pode falhar com checksums/trailing-chunk (aws-chunked). Força "when_required".
+      AWS_REQUEST_CHECKSUM_CALCULATION: "when_required"
+      AWS_RESPONSE_CHECKSUM_VALIDATION: "when_required"
       TF_VAR_compartment_id: ${{ secrets.COMPARTMENT_ID }}
       TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
       TF_VAR_node_image_id: ${{ secrets.NODE_IMAGE_ID }}
@@ -96,6 +99,9 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_S3_DISABLE_MULTIPART_UPLOAD: "true"
       AWS_S3_FORCE_PATH_STYLE: "true"
+      # OCI S3-compat pode falhar com checksums/trailing-chunk (aws-chunked). Força "when_required".
+      AWS_REQUEST_CHECKSUM_CALCULATION: "when_required"
+      AWS_RESPONSE_CHECKSUM_VALIDATION: "when_required"
       TF_VAR_compartment_id: ${{ secrets.COMPARTMENT_ID }}
       TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
       TF_VAR_node_image_id: ${{ secrets.NODE_IMAGE_ID }}
