@@ -5,7 +5,7 @@ variable "ssh_public_key_path" { type = string }
 # Tags (pass-through para o módulo oracle-terraform-modules/oke/oci).
 # Estrutura esperada (exemplos):
 # freeform_tags = {
-#   cluster = { test = "pipeline" }
+#   cluster = { test = "pipeline-3" }
 #   network = {}
 # }
 variable "freeform_tags" {
