@@ -32,6 +32,14 @@ variable "worker_nsg_ids" {
   description = "NSGs para anexar aos VNICs dos worker nodes (node pools)."
 }
 
+# Compat: nome antigo usado em algumas versões/configs.
+# Se `worker_nsg_ids` estiver vazio, o módulo usará `node_nsg_ids`.
+variable "node_nsg_ids" {
+  type        = list(string)
+  default     = []
+  description = "Alias/compat: NSGs para anexar aos nodes (preferir worker_nsg_ids)."
+}
+
 variable "pod_nsg_ids" {
   type        = list(string)
   default     = []

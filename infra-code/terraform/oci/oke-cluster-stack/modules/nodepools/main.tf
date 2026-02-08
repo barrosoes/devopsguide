@@ -22,6 +22,9 @@ locals {
     var.node_image_id,
     (startswith(local.node_pool_option_image_id, "ocid1.image.") ? local.node_pool_option_image_id : null)
   )
+
+  # Compat: alguns callers usam `node_nsg_ids`. Preferimos `worker_nsg_ids`.
+  effective_worker_nsg_ids = length(var.worker_nsg_ids) > 0 ? var.worker_nsg_ids : var.node_nsg_ids
 }
 
 resource "oci_containerengine_node_pool" "system_pool" {
@@ -54,7 +57,7 @@ resource "oci_containerengine_node_pool" "system_pool" {
 
   node_config_details {
     size    = var.system_size
-    nsg_ids = var.worker_nsg_ids
+    nsg_ids = local.effective_worker_nsg_ids
     placement_configs {
       availability_domain = local.nodepool_ad
       subnet_id           = var.nodes_subnet_id
@@ -102,7 +105,7 @@ resource "oci_containerengine_node_pool" "workload_pool" {
 
   node_config_details {
     size    = var.workload_size
-    nsg_ids = var.worker_nsg_ids
+    nsg_ids = local.effective_worker_nsg_ids
     placement_configs {
       availability_domain = local.nodepool_ad
       subnet_id           = var.nodes_subnet_id
