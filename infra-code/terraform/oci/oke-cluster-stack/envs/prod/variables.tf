@@ -32,10 +32,10 @@ variable "node_image_id" {
 # Tag de teste para validar mudanças via pipeline (aplicada no componente "cluster").
 variable "oke_freeform_tags" {
   type        = any
-  description = "Freeform tags do módulo OKE (estrutura por componente)."
+  description = "Freeform tags do módulo OKE (estrutura por componente / cluster)."
   default = {
     cluster = {
-      test = "pipeline-3"
+      test = "pipeline"
     }
   }
 }
