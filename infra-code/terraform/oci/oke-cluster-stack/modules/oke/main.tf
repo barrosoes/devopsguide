@@ -39,8 +39,9 @@ locals {
 }
 
 module "oke_cluster" {
-  source  = "oracle-terraform-modules/oke/oci"
-  version = "5.3.2"
+  # Vendorizado (mais seguro): permite gerenciar tags (o módulo upstream ignora
+  # freeform/defined_tags via lifecycle ignore_changes).
+  source = "../vendor/terraform-oci-oke"
 
   providers = {
     oci      = oci
