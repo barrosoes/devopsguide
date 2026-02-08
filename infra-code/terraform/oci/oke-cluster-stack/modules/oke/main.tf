@@ -22,6 +22,7 @@ locals {
   # O módulo `oracle-terraform-modules/oke/oci` espera tags em uma estrutura
   # "por componente". Mantemos todos os campos para evitar access errors quando
   # o módulo ler chaves ausentes.
+  # Obs.: para aplicar tags só no cluster, preencha apenas `freeform_tags.cluster`.
   _default_component_tags = {
     bastion           = {}
     cluster           = {}

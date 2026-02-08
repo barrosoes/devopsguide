@@ -12,6 +12,7 @@ module "oke" {
 
   ssh_public_key_path = var.ssh_public_key_path
 
+  # Freeform tags do cluster (ex.: "test=pipeline-3")
   freeform_tags = var.oke_freeform_tags
 }
 

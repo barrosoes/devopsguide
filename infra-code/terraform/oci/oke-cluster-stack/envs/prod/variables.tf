@@ -35,7 +35,7 @@ variable "oke_freeform_tags" {
   description = "Freeform tags do módulo OKE (estrutura por componente)."
   default = {
     cluster = {
-      test = "pipeline-2"
+      test = "pipeline-3"
     }
   }
 }

@@ -2,9 +2,15 @@ name: Terraform OKE Multi-Env
 
 on:
   workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - "infra-code/terraform/oci/oke-cluster-stack/**"
+      - ".github/workflows/terraform.yml"
   pull_request:
     paths:
       - "infra-code/terraform/oci/oke-cluster-stack/**"
+      - ".github/workflows/terraform.yml"
 
 env:
   TF_IN_AUTOMATION: "true"
