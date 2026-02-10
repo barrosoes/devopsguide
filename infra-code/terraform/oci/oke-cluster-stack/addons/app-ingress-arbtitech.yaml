@@ -8,17 +8,17 @@ metadata:
 spec:
   ingressClassName: nginx
   tls:
-  - hosts:
-      - platformengineering.com.br
-    secretName: platformengineering.com.br
+    - hosts:
+        - app.platformengineering.com.br
+      secretName: app-platformengineering-tls
   rules:
-  - host: platformengineering.com.br
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: pengi-service
-            port:
-              number: 80
+    - host: app.platformengineering.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pengi-service
+                port:
+                  number: 80
