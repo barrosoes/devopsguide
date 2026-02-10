@@ -8,7 +8,7 @@ metadata:
 spec:
   project: my-app
   source:
-    repoURL: https://github.com/flaviorssilva1981/guiadodevops.git
+    repoURL: https://github.com/barrosoes/devopsguide.git
     targetRevision: main
     path: kubernetes/argocd_cluster02/config/boutique-app
   destination:
