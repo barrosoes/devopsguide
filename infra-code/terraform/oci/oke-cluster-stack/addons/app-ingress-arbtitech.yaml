@@ -9,16 +9,16 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-      - app.arbtitech.com
-    secretName: app-arbtitech-tls
+      - platformengineering.com.br
+    secretName: platformengineering.com.br
   rules:
-  - host: app.arbtitech.com
+  - host: platformengineering.com.br
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: meu-service
+            name: pengi-service
             port:
               number: 80
