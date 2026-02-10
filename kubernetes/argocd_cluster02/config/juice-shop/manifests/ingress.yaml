@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: juice-shop
+  namespace: juice-shop
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: juiceshop.platformengineering.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: juice-shop
+                port:
+                  name: http
+  # tls:
+  #   - hosts:
+  #       - juice-shop.platformengineering.com.br
+  #     secretName: juice-shop-tls
