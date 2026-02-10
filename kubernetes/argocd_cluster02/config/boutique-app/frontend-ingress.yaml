@@ -5,15 +5,15 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: "letsencrypt"
-    external-dns.alpha.kubernetes.io/hostname: boutique.dublinconsulting.com.br
+    external-dns.alpha.kubernetes.io/hostname: boutique.platformengineering.com.br
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
 spec:
   tls:
     - hosts:
-        - boutique.dublinconsulting.com.br
+        - boutique.platformengineering.com.br
       secretName: tls-boutique
   rules:
-    - host: boutique.dublinconsulting.com.br
+    - host: boutique.platformengineering.com.br
       http:
         paths:
           - path: /
