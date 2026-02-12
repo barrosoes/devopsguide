@@ -36,6 +36,9 @@ locals {
 
   freeform_tags = merge(local._default_component_tags, var.freeform_tags)
   defined_tags  = merge(local._default_component_tags, var.defined_tags)
+
+  # Keep version centralized for outputs and module inputs.
+  kubernetes_version = "v1.34.2"
 }
 
 module "oke_cluster" {
@@ -87,7 +90,7 @@ module "oke_cluster" {
   create_operator = false
 
   # Cluster settings
-  kubernetes_version = "v1.34.2"
+  kubernetes_version = local.kubernetes_version
   cluster_type       = "enhanced"
   cni_type           = var.cni_type
 
