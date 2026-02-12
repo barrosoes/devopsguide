@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: boutique-frontend
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt"
+    external-dns.alpha.kubernetes.io/hostname: boutique.platformengineering.com.br
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - boutique.platformengineering.com.br
+      secretName: tls-boutique
+  rules:
+    - host: boutique.platformengineering.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80

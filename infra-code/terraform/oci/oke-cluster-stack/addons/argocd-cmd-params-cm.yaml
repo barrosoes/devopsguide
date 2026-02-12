@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cmd-params-cm
+  namespace: argocd
+data:
+  # Run ArgoCD server without TLS (HTTP only) behind the Ingress.
+  server.insecure: "true"
+  # Serve ArgoCD UI/API at the domain root (/) instead of a subpath.
+  server.basehref: /
+  server.rootpath: ""

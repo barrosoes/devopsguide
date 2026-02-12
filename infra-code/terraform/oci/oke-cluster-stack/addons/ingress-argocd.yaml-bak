@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  creationTimestamp: "2026-02-05T22:34:43Z"
+  generation: 2
+  name: argocd-ingress
+  namespace: argocd
+  resourceVersion: "509789"
+  uid: 88540a4a-c84b-43d5-9bde-2587f0f63e6f
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: argocd.platformengineering.com.br
+    http:
+      paths:
+      - backend:
+          service:
+            name: argo-cd-argocd-server
+            port:
+              number: 80
+        path: /
+        pathType: ImplementationSpecific

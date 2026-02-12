@@ -1,0 +1,46 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webpage-ingress
+  namespace: webcolor
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: platformengineering.com.br
+      http:
+        paths:
+          # Root (http://platformengineering.com.br/)
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: webpage
+                port:
+                  number: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webpage-ingress-web
+  namespace: webcolor
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: platformengineering.com.br
+      http:
+        paths:
+          # Back-compat (http://platformengineering.com.br/web -> /)
+          - path: /web(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: webpage
+                port:
+                  number: 80
