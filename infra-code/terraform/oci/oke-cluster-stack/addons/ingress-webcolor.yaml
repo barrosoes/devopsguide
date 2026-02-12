@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: platformengineering.com.br
+    - host: webcolor.platformengineering.com.br
       http:
         paths:
           # Root (http://platformengineering.com.br/)
@@ -33,11 +33,11 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: platformengineering.com.br
+    - host: webcolor.platformengineering.com.br
       http:
         paths:
           # Back-compat (http://platformengineering.com.br/web -> /)
-          - path: /web(/|$)(.*)
+          - path: /
             pathType: ImplementationSpecific
             backend:
               service:
