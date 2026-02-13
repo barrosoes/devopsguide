@@ -14,8 +14,8 @@ COPY . .
 RUN npm i -g typescript@5.3.3
 
 RUN npm install --omit=dev --unsafe-perm --no-audit --no-fund \
- && npm dedupe --omit=dev \
- && npm cache clean --force
+    && npm dedupe --omit=dev \
+    && npm cache clean --force
 
 # Optional: remove large build-time artifacts (not required for runtime)
 RUN rm -rf frontend/node_modules frontend/.angular || true
@@ -27,6 +27,7 @@ WORKDIR /juice-shop
 COPY --from=builder /juice-shop/package.json ./package.json
 COPY --from=builder /juice-shop/node_modules ./node_modules
 COPY --from=builder /juice-shop/build ./build
+COPY --from=builder /juice-shop/encryptionkeys ./encryptionkeys
 
 # Static assets + runtime data/config
 COPY --from=builder /juice-shop/frontend/dist/frontend ./frontend/dist/frontend
@@ -41,13 +42,13 @@ COPY --from=builder /juice-shop/uploads ./uploads
 
 # Prune build outputs not needed at runtime (saves image space)
 RUN rm -rf build/test build/rsn \
- && find build -type f -name "*.map" -delete
+    && find build -type f -name "*.map" -delete
 
 # Ensure writable dirs exist and are owned/grouped for non-root execution
 RUN mkdir -p logs uploads/complaints frontend/dist/frontend/assets/public/images/uploads \
- && chown -R 65532:0 logs \
- && chgrp -R 0 ftp frontend/dist logs data i18n .well-known uploads \
- && chmod -R g=u ftp frontend/dist logs data i18n .well-known uploads
+    && chown -R 65532:0 logs \
+    && chgrp -R 0 ftp frontend/dist logs data i18n .well-known uploads \
+    && chmod -R g=u ftp frontend/dist logs data i18n .well-known uploads
 
 FROM gcr.io/distroless/nodejs22-debian12
 ARG BUILD_DATE
