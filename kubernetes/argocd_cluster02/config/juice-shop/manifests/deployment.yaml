@@ -18,7 +18,7 @@ spec:
         runAsUser: 65532
       containers:
         - name: juice-shop
-          image: bkimminich/juice-shop:latest
+          image: barrosoes/juice-shop:v2
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -70,4 +70,3 @@ spec:
           emptyDir: {}
         - name: profile-image-uploads
           emptyDir: {}
-
