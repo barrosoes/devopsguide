@@ -53,6 +53,9 @@ spec:
               cpu: "1"
               memory: 1Gi
           volumeMounts:
+            - name: data
+              mountPath: /juice-shop/data/juiceshop.sqlite
+              subPath: juiceshop.sqlite
             - name: tmp
               mountPath: /tmp
             - name: logs
