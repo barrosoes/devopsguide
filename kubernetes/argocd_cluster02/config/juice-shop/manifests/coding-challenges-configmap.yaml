@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: juice-shop-coding-challenges
+  namespace: juice-shop
+data:
+  server.ts: |
+    // placeholder for codingChallenges scanner

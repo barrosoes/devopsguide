@@ -4,6 +4,9 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - pvc.yaml
+  - config-schema-configmap.yaml
+  - coding-challenges-configmap.yaml
+  - encryptionkeys-secret.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml

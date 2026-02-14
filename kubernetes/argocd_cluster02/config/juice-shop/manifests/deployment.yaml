@@ -4,7 +4,9 @@ metadata:
   name: juice-shop
   namespace: juice-shop
 spec:
-  replicas: 2
+  replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: juice-shop
@@ -16,6 +18,59 @@ spec:
       securityContext:
         runAsNonRoot: true
         runAsUser: 65532
+        runAsGroup: 0
+        fsGroup: 0
+        fsGroupChangePolicy: OnRootMismatch
+      initContainers:
+        - name: init-data
+          image: barrosoes/juice-shop:v2
+          imagePullPolicy: IfNotPresent
+          command:
+            - /nodejs/bin/node
+            - -e
+            - |
+              const fsp = require('node:fs/promises')
+              const path = require('node:path')
+
+              async function exists (p) {
+                try { await fsp.access(p); return true } catch { return false }
+              }
+
+              async function copyDir (src, dst) {
+                await fsp.mkdir(dst, { recursive: true })
+                const entries = await fsp.readdir(src, { withFileTypes: true })
+                for (const ent of entries) {
+                  const s = path.join(src, ent.name)
+                  const d = path.join(dst, ent.name)
+                  if (ent.isDirectory()) {
+                    await copyDir(s, d)
+                  } else if (ent.isFile()) {
+                    if (!(await exists(d))) {
+                      await fsp.copyFile(s, d)
+                    }
+                  }
+                }
+              }
+
+              ;(async () => {
+                const target = '/mnt/data'
+                await fsp.mkdir(target, { recursive: true })
+                // Ensure required subdirs exist
+                await fsp.mkdir(path.join(target, 'chatbot'), { recursive: true })
+                // Populate static data on first run (PVC starts empty)
+                await copyDir('/juice-shop/data/static', path.join(target, 'static'))
+              })().catch((e) => { console.error(e); process.exit(1) })
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: data
+              mountPath: /mnt/data
       containers:
         - name: juice-shop
           image: barrosoes/juice-shop:v2
@@ -30,6 +85,7 @@ spec:
               value: ""
           securityContext:
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
             capabilities:
               drop:
                 - ALL
@@ -53,11 +109,29 @@ spec:
               cpu: "1"
               memory: 1Gi
           volumeMounts:
+            - name: config-schema
+              mountPath: /juice-shop/config.schema.yml
+              subPath: config.schema.yml
+              readOnly: true
+            - name: encryptionkeys
+              mountPath: /juice-shop/encryptionkeys
+              readOnly: true
+            - name: coding-challenges
+              mountPath: /juice-shop/server.ts
+              subPath: server.ts
+              readOnly: true
+            - name: routes-placeholder
+              mountPath: /juice-shop/routes
+            - name: lib-placeholder
+              mountPath: /juice-shop/lib
+            - name: models-placeholder
+              mountPath: /juice-shop/models
+            - name: frontend-src-app-placeholder
+              mountPath: /juice-shop/frontend/src/app
             - name: chatbot-data
               mountPath: /juice-shop/data/chatbot
             - name: data
-              mountPath: /juice-shop/data/juiceshop.sqlite
-              subPath: juiceshop.sqlite
+              mountPath: /juice-shop/data
             - name: tmp
               mountPath: /tmp
             - name: logs
@@ -67,6 +141,25 @@ spec:
             - name: profile-image-uploads
               mountPath: /juice-shop/frontend/dist/frontend/assets/public/images/uploads
       volumes:
+        - name: config-schema
+          configMap:
+            name: juice-shop-config-schema
+        - name: encryptionkeys
+          secret:
+            secretName: juice-shop-encryptionkeys
+        - name: coding-challenges
+          configMap:
+            name: juice-shop-coding-challenges
+        - name: routes-placeholder
+          emptyDir: {}
+        - name: lib-placeholder
+          emptyDir: {}
+        - name: models-placeholder
+          emptyDir: {}
+        - name: frontend-src-app-placeholder
+          emptyDir: {}
+        - name: chatbot-data
+          emptyDir: {}
         - name: tmp
           emptyDir: {}
         - name: logs
@@ -75,5 +168,6 @@ spec:
           emptyDir: {}
         - name: profile-image-uploads
           emptyDir: {}
-        - name: chatbot-data
-          emptyDir: {}
+        - name: data
+          persistentVolumeClaim:
+            claimName: juice-shop-data
