@@ -4,11 +4,12 @@ metadata:
   name: letsencrypt-prod
 spec:
   acme:
-    email: admin@arbtitech.com
+    email: barrosoes@gmail.com
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      name: letsencrypt-prod-key
+      name: letsencrypt-prod
     solvers:
-    - http01:
-        ingress:
-          class: nginx
+      - http01:
+          ingress:
+            class: nginx
+

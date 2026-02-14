@@ -7,6 +7,10 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - webcolor.platformengineering.com.br
+      secretName: webcolor-tls
   rules:
     - host: webcolor.platformengineering.com.br
       http:

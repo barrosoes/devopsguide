@@ -27,7 +27,7 @@ variable "vcn_cidr" {
 variable "control_plane_allowed_cidrs" {
   type        = list(string)
   description = "Lista de CIDRs autorizados a acessar o endpoint do control plane."
-  default     = ["177.221.120.243/32"]
+  default     = ["0.0.0.0/0"]
 }
 
 variable "cni_type" {
