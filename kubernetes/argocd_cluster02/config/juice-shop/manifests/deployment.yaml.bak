@@ -16,9 +16,12 @@ spec:
       securityContext:
         runAsNonRoot: true
         runAsUser: 65532
+        runAsGroup: 0
+        fsGroup: 0
+        fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: juice-shop
-          image: bkimminich/juice-shop:latest
+          image: barrosoes/juice-shop:v2
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -26,10 +29,13 @@ spec:
           env:
             - name: PORT
               value: "3000"
+            # Se publicar via Ingress em subpath (ex.: /juice-shop),
+            # ajuste para BASE_PATH="/juice-shop"
             - name: BASE_PATH
               value: ""
           securityContext:
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop:
                 - ALL
@@ -39,12 +45,16 @@ spec:
               port: http
             initialDelaySeconds: 20
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
           livenessProbe:
             httpGet:
               path: /rest/admin/application-version
               port: http
             initialDelaySeconds: 60
             periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
           resources:
             requests:
               cpu: 200m
@@ -59,6 +69,9 @@ spec:
               mountPath: /juice-shop/logs
             - name: uploads
               mountPath: /juice-shop/uploads
+            - name: data
+              mountPath: /juice-shop/data
+            # O app salva a foto do perfil neste path:
             - name: profile-image-uploads
               mountPath: /juice-shop/frontend/dist/frontend/assets/public/images/uploads
       volumes:
@@ -70,4 +83,6 @@ spec:
           emptyDir: {}
         - name: profile-image-uploads
           emptyDir: {}
-
+        - name: data
+          persistentVolumeClaim:
+            claimName: juice-shop-data

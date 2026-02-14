@@ -31,6 +31,7 @@ COPY --from=builder /juice-shop/build ./build
 COPY --from=builder /juice-shop/encryptionkeys ./encryptionkeys
 COPY --from=builder /juice-shop/config.schema.yml ./config.schema.yml
 
+
 # Static assets + runtime data/config
 COPY --from=builder /juice-shop/frontend/dist/frontend ./frontend/dist/frontend
 COPY --from=builder /juice-shop/i18n ./i18n
