@@ -27,7 +27,9 @@ WORKDIR /juice-shop
 COPY --from=builder /juice-shop/package.json ./package.json
 COPY --from=builder /juice-shop/node_modules ./node_modules
 COPY --from=builder /juice-shop/build ./build
+#correcoes aplicadas
 COPY --from=builder /juice-shop/encryptionkeys ./encryptionkeys
+COPY --from=builder /juice-shop/config.schema.yml ./config.schema.yml
 
 # Static assets + runtime data/config
 COPY --from=builder /juice-shop/frontend/dist/frontend ./frontend/dist/frontend

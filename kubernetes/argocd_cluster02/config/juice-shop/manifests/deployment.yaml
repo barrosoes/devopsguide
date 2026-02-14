@@ -21,7 +21,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: juice-shop
-          image: barrosoes/juice-shop:v1
+          image: barrosoes/juice-shop:v2
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
