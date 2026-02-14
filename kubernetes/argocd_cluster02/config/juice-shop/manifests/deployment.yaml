@@ -53,6 +53,8 @@ spec:
               cpu: "1"
               memory: 1Gi
           volumeMounts:
+            - name: chatbot-data
+              mountPath: /juice-shop/data/chatbot
             - name: data
               mountPath: /juice-shop/data/juiceshop.sqlite
               subPath: juiceshop.sqlite
@@ -72,4 +74,6 @@ spec:
         - name: uploads
           emptyDir: {}
         - name: profile-image-uploads
+          emptyDir: {}
+        - name: chatbot-data
           emptyDir: {}
