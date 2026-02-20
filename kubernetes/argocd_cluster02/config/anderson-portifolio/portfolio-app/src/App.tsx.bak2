@@ -1,0 +1,180 @@
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+
+export default function Portfolio() {
+  const username = "barrosoes"; // 🔁 substituir
+  const [repos, setRepos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=6`)
+      .then((res) => res.json())
+      .then((data) => {
+        setRepos(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
+      {/* HERO */}
+      <section className="relative max-w-6xl mx-auto px-6 pt-28 pb-24 text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent">
+            Anderson Barroso
+          </h1>
+          <p className="text-xl text-slate-400 mb-10">
+            DevOps Engineer • MultiCloud • Kubernetes • GitOps • Cloud Architecture
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          className="flex justify-center gap-6"
+        >
+          <a
+            href="https://github.com/barrosoes"
+            className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-2xl shadow-xl transition"
+          >
+            GitHub
+          </a>
+          <a
+            href="https://www.linkedin.com/in/anderson-rodrigues-barroso/"
+            className="bg-slate-800 hover:bg-slate-700 px-8 py-3 rounded-2xl shadow-xl transition"
+          >
+            LinkedIn
+          </a>
+        </motion.div>
+      </section>
+
+      {/* SKILLS */}
+      <section className="max-w-6xl mx-auto px-6 py-20 border-t border-slate-800">
+        <h2 className="text-3xl font-semibold mb-12 text-center">Core Expertise</h2>
+        <div className="grid md:grid-cols-3 gap-8">
+          {[
+            "Kubernetes & ArgoCD",
+            "CI/CD & Automation",
+            "MultiCloud Architecture",
+            "Infrastructure as Code",
+            "Performance & Observability",
+            ].map((skill, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="bg-slate-900 p-6 rounded-2xl shadow-xl text-center"
+            >
+              {skill}
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ARCHITECTURE */}
+      <section className="max-w-6xl mx-auto px-6 py-20 border-t border-slate-800">
+        <h2 className="text-3xl font-semibold mb-12 text-center">Architecture in Production</h2>
+        <div className="grid md:grid-cols-4 gap-6 text-center">
+          {["GitHub", "CI/CD", "ArgoCD", "Kubernetes Cluster"].map((step, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: index * 0.2 }}
+              viewport={{ once: true }}
+              className="bg-slate-900 p-6 rounded-2xl shadow-xl"
+            >
+              {step}
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* DATABASE EXPERTISE (Secondary Focus) */}
+      <section className="max-w-5xl mx-auto px-6 py-16 border-t border-slate-900 text-center">
+        <h2 className="text-xl font-medium text-slate-500 mb-10 tracking-wide uppercase">
+          Database Expertise
+        </h2>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {[
+            "Oracle RAC (High Availability)",
+            "Oracle Data Guard (Disaster Recovery)",
+            "Performance Tuning",
+            "Enterprise Database Architecture"
+          ].map((item, index) => (
+            <motion.div
+              key={index}
+              whileHover={{ scale: 1.02 }}
+              className="bg-slate-900/40 border border-slate-900 text-slate-400 p-5 rounded-xl"
+            >
+              {item}
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* PROJECTS */}
+      <section className="max-w-6xl mx-auto px-6 py-20 border-t border-slate-800">
+        <h2 className="text-3xl font-semibold mb-12 text-center">Latest Projects</h2>
+
+        {loading ? (
+          <p className="text-slate-400 text-center">Carregando projetos...</p>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {repos.map((repo) => (
+              <motion.div
+                key={repo.id}
+                whileHover={{ scale: 1.05 }}
+                className="bg-slate-900 p-6 rounded-2xl shadow-xl transition"
+              >
+                <h3 className="text-xl font-semibold mb-3">{repo.name}</h3>
+                <p className="text-slate-400 text-sm mb-6">
+                  {repo.description || "Projeto DevOps / Cloud / Infraestrutura"}
+                </p>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-slate-500">⭐ {repo.stargazers_count}</span>
+                  <a
+                    href={repo.html_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:underline"
+                  >
+                    Ver Projeto
+                  </a>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* CONTACT */}
+      <section className="max-w-4xl mx-auto px-6 py-24 border-t border-slate-800 text-center">
+        <h2 className="text-3xl font-semibold mb-6">Let’s Build Something Great</h2>
+        <p className="text-slate-400 mb-10">
+          Disponível para projetos DevOps, Cloud Architecture e Database Engineering.
+        </p>
+        <a
+          href="mailto:barrosoes@gmail.com"
+          className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-90 px-10 py-4 rounded-2xl shadow-xl transition"
+        >
+          Entrar em Contato
+        </a>
+      </section>
+
+      <footer className="text-center text-slate-600 text-sm py-12 border-t border-slate-800">
+        © {new Date().getFullYear()} Anderson Barroso • Built with React • Deployed via GitOps on OKE
+      </footer>
+    </div>
+  );
+}
+

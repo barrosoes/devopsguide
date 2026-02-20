@@ -14,20 +14,46 @@ spec:
         deploymentMode: SingleBinary
 
         singleBinary:
-           replicas: 1
-           persistence:
-             enabled: true
-             storageClass: oci-bv
-             size: 20Gi
+          replicas: 1
+          persistence:
+            enabled: true
+            storageClass: oci-bv
+            accessModes:
+              - ReadWriteOnce
+            size: 20Gi
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+
+        # Desabilita completamente modo distribuído
+        backend:
+          replicas: 0
+        read:
+          replicas: 0
+        write:
+          replicas: 0
+
+        # Desabilita componentes extras
         monitoring:
           enabled: false
+
         grafanaAgent:
           enabled: false
+
+        test:
+          enabled: false
+
         crds:
           create: false
+
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
+
   syncPolicy:
     automated:
       prune: true

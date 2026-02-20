@@ -1,0 +1,195 @@
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+
+export default function Portfolio() {
+  const username = "barrosoes";
+  const [repos, setRepos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=6`)
+      .then((res) => res.json())
+      .then((data) => {
+        setRepos(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className="relative min-h-screen bg-black text-white overflow-x-hidden">
+      {/* Animated Glow Background */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-blue-600 opacity-20 blur-[160px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-200px] right-[-200px] w-[600px] h-[600px] bg-cyan-500 opacity-10 blur-[140px] rounded-full animate-pulse" />
+      </div>
+
+      {/* HERO */}
+      <section className="max-w-7xl mx-auto px-6 pt-40 pb-32 text-center">
+        <motion.h1
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-6xl md:text-7xl font-bold leading-tight mb-8 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-500 bg-clip-text text-transparent"
+        >
+          Building Scalable MultiCloud Platforms
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-xl text-slate-400 max-w-3xl mx-auto mb-12"
+        >
+          DevOps Engineer focused on Kubernetes, GitOps and Cloud Architecture.
+          Designing production-grade infrastructure with automation and reliability at scale.
+        </motion.p>
+
+        <div className="flex justify-center gap-6">
+          <motion.a
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+            href="https://github.com/barrosoes"
+            className="bg-white text-black px-8 py-3 rounded-full font-medium shadow-lg transition"
+          >
+            View GitHub
+          </motion.a>
+
+          <motion.a
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+            href="https://www.linkedin.com/in/anderson-rodrigues-barroso/"
+            className="border border-slate-700 px-8 py-3 rounded-full hover:bg-slate-900 transition"
+          >
+            LinkedIn
+          </motion.a>
+        </div>
+      </section>
+
+      {/* Core Capabilities */}
+      <section className="max-w-6xl mx-auto px-6 py-28 border-t border-slate-900">
+        <h2 className="text-4xl font-semibold text-center mb-20">
+          Core Capabilities
+        </h2>
+
+        <div className="grid md:grid-cols-3 gap-10">
+          {[
+            {
+              title: "Kubernetes & GitOps",
+              desc: "Production clusters on OKE with ArgoCD-driven deployments."
+            },
+            {
+              title: "CI/CD Automation",
+              desc: "Container builds, registry integration and GitOps workflows."
+            },
+            {
+              title: "MultiCloud Architecture",
+              desc: "Scalable, secure and resilient cloud platforms."
+            }
+          ].map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -6 }}
+              className="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 p-8 rounded-3xl"
+            >
+              <h3 className="text-xl font-semibold mb-4">{item.title}</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                {item.desc}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Infra of this Site */}
+      <section className="max-w-6xl mx-auto px-6 py-28 border-t border-slate-900 text-center">
+        <h2 className="text-4xl font-semibold mb-20">Infrastructure Behind This Site</h2>
+
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-slate-400 text-sm">
+          {[
+            "GitHub",
+            "CI/CD Pipeline",
+            "Container Registry",
+            "ArgoCD (GitOps)",
+            "OKE Cluster",
+            "Ingress + TLS"
+          ].map((step, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="px-4 py-2 border border-slate-800 rounded-full"
+            >
+              {step}
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Projects */}
+      <section className="max-w-6xl mx-auto px-6 py-28 border-t border-slate-900">
+        <h2 className="text-4xl font-semibold text-center mb-20">
+          Latest Projects
+        </h2>
+
+        {loading ? (
+          <p className="text-slate-500 text-center">Loading repositories...</p>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {repos.map((repo) => (
+              <motion.div
+                key={repo.id}
+                whileHover={{ y: -8 }}
+                className="bg-slate-950 border border-slate-900 p-8 rounded-3xl transition"
+              >
+                <h3 className="text-lg font-semibold mb-3">{repo.name}</h3>
+                <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+                  {repo.description || "Cloud / DevOps / Infrastructure Project"}
+                </p>
+                <a
+                  href={repo.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 text-sm hover:underline"
+                >
+                  View Repository →
+                </a>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Subtle Database Section */}
+      <section className="max-w-4xl mx-auto px-6 py-24 border-t border-slate-900 text-center">
+        <h3 className="text-slate-600 uppercase tracking-widest text-xs mb-10">
+          Enterprise Database Expertise
+        </h3>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {[
+            "Oracle RAC (High Availability)",
+            "Oracle Data Guard (Disaster Recovery)",
+            "Performance Tuning",
+            "Enterprise Database Architecture"
+          ].map((item, index) => (
+            <div key={index} className="text-slate-500 text-sm">
+              {item}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <footer className="text-center text-slate-700 text-xs py-16 border-t border-slate-900">
+        © {new Date().getFullYear()} Anderson Barroso • Built with React • Deployed via GitOps on OKE
+      </footer>
+    </div>
+  );
+}
+
