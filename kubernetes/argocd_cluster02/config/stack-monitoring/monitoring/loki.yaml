@@ -10,11 +10,11 @@ spec:
     chart: loki
     targetRevision: 5.41.5
     helm:
-    values: |
-      monitoring:
-        enabled: false
-      grafanaAgent:
-        enabled: false  
+      values: |
+        monitoring:
+          enabled: false
+        grafanaAgent:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
