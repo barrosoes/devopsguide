@@ -11,10 +11,20 @@ spec:
     targetRevision: 5.41.5
     helm:
       values: |
+        deploymentMode: SingleBinary
+
+        singleBinary:
+           replicas: 1
+           persistence:
+             enabled: true
+             storageClass: oci-bv
+             size: 20Gi
         monitoring:
           enabled: false
         grafanaAgent:
           enabled: false
+        crds:
+          create: false
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

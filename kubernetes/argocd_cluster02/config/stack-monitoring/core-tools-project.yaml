@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: core-tools
+  namespace: argocd
+spec:
+  description: Core infrastructure tools
+
+  sourceRepos:
+    - '*'
+
+  destinations:
+    - namespace: monitoring
+      server: https://kubernetes.default.svc
+
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
