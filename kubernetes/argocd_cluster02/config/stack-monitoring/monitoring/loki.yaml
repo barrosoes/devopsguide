@@ -29,24 +29,35 @@ spec:
               cpu: 500m
               memory: 1Gi
 
-        # Desabilita completamente modo distribuído
+        # Desativa completamente modo distribuído
         backend:
-          replicas: 0
+          enabled: false
         read:
-          replicas: 0
+          enabled: false
         write:
-          replicas: 0
+          enabled: false
 
-        # Desabilita componentes extras
+        # Desativa gateway
+        gateway:
+          enabled: false
+
+        # Desativa canary
+        lokiCanary:
+          enabled: false
+
+        # Desativa monitoramento extra
         monitoring:
           enabled: false
 
+        # Desativa grafana agent
         grafanaAgent:
           enabled: false
 
+        # Desativa testes
         test:
           enabled: false
 
+        # Impede recriação de CRDs
         crds:
           create: false
 
