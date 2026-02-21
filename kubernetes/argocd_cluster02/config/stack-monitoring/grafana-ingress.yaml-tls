@@ -3,8 +3,14 @@ kind: Ingress
 metadata:
   name: grafana
   namespace: monitoring
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - grafana.platformengineering.com.br
+      secretName: grafana-tls
   rules:
     - host: grafana.platformengineering.com.br
       http:
