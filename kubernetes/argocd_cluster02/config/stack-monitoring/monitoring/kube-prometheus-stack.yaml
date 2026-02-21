@@ -20,7 +20,8 @@ spec:
           admissionWebhooks:
             enabled: false
           tls:
-            anabled: false
+            enabled: false
+
         prometheus:
           prometheusSpec:
             retention: 15d
@@ -29,6 +30,12 @@ spec:
     server: https://kubernetes.default.svc
     namespace: monitoring
 
+  ignoreDifferences:
+    - group: monitoring.coreos.com
+      kind: ServiceMonitor
+      jsonPointers:
+        - /spec/endpoints
+
   syncPolicy:
     automated:
       prune: true
@@ -36,4 +43,5 @@ spec:
     syncOptions:
       - ServerSideApply=true
       - Replace=true
+      - RespectIgnoreDifferences=true
 
