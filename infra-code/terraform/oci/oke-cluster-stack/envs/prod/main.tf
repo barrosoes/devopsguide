@@ -31,6 +31,6 @@ module "nodepools" {
   system_size   = 2
   workload_size = 4
   workload_min  = 1
-  workload_max  = 2
+  workload_max  = 4
 
 }
