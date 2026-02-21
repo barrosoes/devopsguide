@@ -1,0 +1,42 @@
+helm:
+  values: |
+    deploymentMode: SingleBinary
+
+    loki:
+      auth_enabled: false
+
+    singleBinary:
+      replicas: 1
+      persistence:
+        enabled: true
+        storageClass: oci-bv
+        accessModes:
+          - ReadWriteOnce
+        size: 20Gi
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 500m
+          memory: 1Gi
+
+    backend:
+      enabled: false
+    read:
+      enabled: false
+    write:
+      enabled: false
+    gateway:
+      enabled: false
+    lokiCanary:
+      enabled: false
+    monitoring:
+      enabled: false
+    grafanaAgent:
+      enabled: false
+    test:
+      enabled: false
+    crds:
+      create: false
+
