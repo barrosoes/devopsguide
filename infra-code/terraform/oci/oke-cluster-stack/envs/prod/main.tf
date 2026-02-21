@@ -29,7 +29,7 @@ module "nodepools" {
   node_image_id       = var.node_image_id
 
   system_size   = 2
-  workload_size = 2
+  workload_size = 4
   workload_min  = 1
   workload_max  = 2
 
