@@ -13,14 +13,20 @@ spec:
       values: |
         grafana:
           enabled: false
+
+        prometheusOperator:
+          admissionWebhooks:
+            enabled: false
+
         prometheus:
           prometheusSpec:
             retention: 15d
+
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
+
   syncPolicy:
     automated:
       prune: true
-      selfHeal: true
 
