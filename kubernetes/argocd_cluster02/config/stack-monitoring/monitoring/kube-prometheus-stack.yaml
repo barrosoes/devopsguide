@@ -19,7 +19,8 @@ spec:
         prometheusOperator:
           admissionWebhooks:
             enabled: false
-
+          tls:
+            anabled: false
         prometheus:
           prometheusSpec:
             retention: 15d
