@@ -43,6 +43,46 @@ spec:
                 url: http://tempo.monitoring.svc:3100
                 access: proxy
 
+              - name: Alertmanager
+                type: alertmanager
+                url: http://kube-prometheus-stack-alertmanager.monitoring.svc:9093
+                access: proxy
+
+        dashboardProviders:
+          dashboardproviders.yaml:
+            apiVersion: 1
+            providers:
+              - name: default
+                orgId: 1
+                folder: Kubernetes
+                type: file
+                disableDeletion: false
+                editable: true
+                options:
+                  path: /var/lib/grafana/dashboards/default
+
+        dashboards:
+          default:
+            kubernetes-cluster-overview:
+              gnetId: 7249
+              revision: 1
+              datasource: Prometheus
+
+            node-exporter-full:
+              gnetId: 1860
+              revision: 37
+              datasource: Prometheus
+
+            kubernetes-pods:
+              gnetId: 6417
+              revision: 1
+              datasource: Prometheus
+
+            loki-logs:
+              gnetId: 13639
+              revision: 1
+              datasource: Loki
+
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
