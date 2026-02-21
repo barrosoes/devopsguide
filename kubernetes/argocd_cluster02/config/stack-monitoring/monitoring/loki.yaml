@@ -32,7 +32,8 @@ spec:
             limits:
               cpu: 500m
               memory: 1Gi
-
+        logs:
+          enabled: false
         backend:
           enabled: false
         read:
