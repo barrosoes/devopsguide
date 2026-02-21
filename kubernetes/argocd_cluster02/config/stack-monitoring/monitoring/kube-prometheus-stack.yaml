@@ -3,6 +3,9 @@ kind: Application
 metadata:
   name: kube-prometheus-stack
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+
 spec:
   project: default
 
@@ -30,12 +33,6 @@ spec:
     server: https://kubernetes.default.svc
     namespace: monitoring
 
-  ignoreDifferences:
-    - group: monitoring.coreos.com
-      kind: ServiceMonitor
-      jsonPointers:
-        - /spec/endpoints
-
   syncPolicy:
     automated:
       prune: true
@@ -44,4 +41,5 @@ spec:
       - ServerSideApply=true
       - Replace=true
       - RespectIgnoreDifferences=true
+      - ApplyOutOfSyncOnly=true
 
