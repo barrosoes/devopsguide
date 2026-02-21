@@ -1,42 +1,63 @@
-helm:
-  values: |
-    deploymentMode: SingleBinary
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki
+  namespace: argocd
+spec:
+  project: default
 
-    loki:
-      auth_enabled: false
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: loki
+    targetRevision: 5.41.5
+    helm:
+      values: |
+        deploymentMode: SingleBinary
 
-    singleBinary:
-      replicas: 1
-      persistence:
-        enabled: true
-        storageClass: oci-bv
-        accessModes:
-          - ReadWriteOnce
-        size: 20Gi
-      resources:
-        requests:
-          cpu: 200m
-          memory: 512Mi
-        limits:
-          cpu: 500m
-          memory: 1Gi
+        loki:
+          auth_enabled: false
 
-    backend:
-      enabled: false
-    read:
-      enabled: false
-    write:
-      enabled: false
-    gateway:
-      enabled: false
-    lokiCanary:
-      enabled: false
-    monitoring:
-      enabled: false
-    grafanaAgent:
-      enabled: false
-    test:
-      enabled: false
-    crds:
-      create: false
+        singleBinary:
+          replicas: 1
+          persistence:
+            enabled: true
+            storageClass: oci-bv
+            accessModes:
+              - ReadWriteOnce
+            size: 20Gi
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+
+        backend:
+          enabled: false
+        read:
+          enabled: false
+        write:
+          enabled: false
+        gateway:
+          enabled: false
+        lokiCanary:
+          enabled: false
+        monitoring:
+          enabled: false
+        grafanaAgent:
+          enabled: false
+        test:
+          enabled: false
+        crds:
+          create: false
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
 
