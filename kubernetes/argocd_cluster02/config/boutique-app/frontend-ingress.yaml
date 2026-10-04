@@ -3,8 +3,15 @@ kind: Ingress
 metadata:
   name: boutique-frontend
   namespace: boutique
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - boutique.arbtech.com.br
+      secretName: boutique-tls
   rules:
   - host: boutique.arbtech.com.br
     http:
@@ -16,4 +23,3 @@ spec:
             name: frontend
             port:
               number: 80
-

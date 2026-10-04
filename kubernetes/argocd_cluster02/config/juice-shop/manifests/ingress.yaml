@@ -4,9 +4,14 @@ metadata:
   name: juice-shop
   namespace: juice-shop
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - juiceshop.arbtech.com.br
+      secretName: juice-shop-tls
   rules:
     - host: juiceshop.arbtech.com.br
       http:
@@ -18,7 +23,3 @@ spec:
                 name: juice-shop
                 port:
                   name: http
-  # tls:
-  #   - hosts:
-  #       - juice-shop.arbtech.com.br
-  #     secretName: juice-shop-tls

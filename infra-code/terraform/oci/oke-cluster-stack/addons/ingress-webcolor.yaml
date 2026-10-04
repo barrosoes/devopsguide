@@ -5,8 +5,13 @@ metadata:
   namespace: webcolor
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - webcolor.arbtech.com.br
+      secretName: webcolor-tls
   rules:
     - host: webcolor.arbtech.com.br
       http:
