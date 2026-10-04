@@ -12,7 +12,10 @@ spec:
     helm:
       values: |
         adminUser: admin
-        adminPassword: admin123
+        admin:
+          existingSecret: grafana
+          userKey: admin-user
+          passwordKey: admin-password
 
         persistence:
           enabled: true
