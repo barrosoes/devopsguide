@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: grafana.platformengineering.com.br
+    - host: grafana.arbtech.com.br
       http:
         paths:
           - path: /

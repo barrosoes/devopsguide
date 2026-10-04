@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: webcolor.platformengineering.com.br
+    - host: webcolor.arbtech.com.br
       http:
         paths:
           - path: /

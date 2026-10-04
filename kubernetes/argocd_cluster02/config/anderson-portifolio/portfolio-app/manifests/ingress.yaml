@@ -2,12 +2,13 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: portfolio
+  namespace: portfolio
   annotations:
     kubernetes.io/ingress.class: "nginx"
 spec:
   ingressClassName: nginx
   rules:
-    - host: portfolio.platformengineering.com.br
+    - host: portfolio.arbtech.com.br
       http:
         paths:
           - path: /
